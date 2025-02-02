@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import {
   Box,
   Container,
@@ -164,6 +164,10 @@ function App() {
 
   const dismissAlert = (id: string) => {
     setAlerts(prev => prev.filter(alert => alert.id !== id));
+  };
+
+  const handleAddAnnotation = (newAnnotation: Annotation) => {
+    setAnnotations(prev => [...prev, newAnnotation]);
   };
 
   if (loading) {

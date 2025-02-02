@@ -116,13 +116,17 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({
   }[chartType];
 
   const getAnnotationPosition = (annotation: Annotation) => {
-    if (!chartRef.current || !annotation.metric || !annotation.value) {
+    if (!chartRef.current || !containerRef.current) {
       return null;
     }
 
     const chart = chartRef.current;
+    const metricName = annotation.metric?.toLowerCase();
+    
+    if (!metricName) return null;
+
     const datasetIndex = chartData.datasets.findIndex(
-      ds => ds.label.toLowerCase() === annotation.metric.toLowerCase()
+      ds => ds.label.toLowerCase() === metricName
     );
     
     if (datasetIndex === -1) return null;
@@ -133,8 +137,11 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({
     
     if (timeIndex === -1) return null;
 
-    const x = chart.getDatasetMeta(datasetIndex).data[timeIndex].x;
-    const y = chart.getDatasetMeta(datasetIndex).data[timeIndex].y;
+    const meta = chart.getDatasetMeta(datasetIndex);
+    if (!meta || !meta.data[timeIndex]) return null;
+
+    const x = meta.data[timeIndex].x;
+    const y = meta.data[timeIndex].y;
 
     return { x, y };
   };
