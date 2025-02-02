@@ -175,7 +175,12 @@ function App() {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', pb: 8 }}>
+    <Box sx={{ 
+      minHeight: '100vh',
+      bgcolor: 'background.default',
+      color: 'text.primary',
+      transition: 'background-color 0.3s, color 0.3s'
+    }}>
       <Container maxWidth="lg" sx={{ pt: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -274,6 +279,7 @@ function App() {
             chartType={chartType}
             timeRange={timeRange}
             annotations={annotations.filter(a => a.modelId === selectedModel)}
+            onAddAnnotation={handleAddAnnotation}
           />
         </Suspense>
 

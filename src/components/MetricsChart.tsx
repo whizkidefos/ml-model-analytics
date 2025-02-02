@@ -34,13 +34,15 @@ interface MetricsChartProps {
   chartType: 'line' | 'bar' | 'pie';
   timeRange: number;
   annotations: Annotation[];
+  onAddAnnotation: (annotation: Annotation) => void;
 }
 
 export const MetricsChart: React.FC<MetricsChartProps> = ({
   metrics,
   chartType,
   timeRange,
-  annotations
+  annotations,
+  onAddAnnotation
 }) => {
   const { mode } = useTheme();
   const chartRef = React.useRef<any>(null);
@@ -146,8 +148,56 @@ export const MetricsChart: React.FC<MetricsChartProps> = ({
     return { x, y };
   };
 
+  const handleChartClick = (event: any) => {
+    if (!chartRef.current) return;
+
+    const chart = chartRef.current;
+    const rect = chart.canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const timeIndex = Math.floor((x / rect.width) * filteredMetrics.length);
+    if (timeIndex >= 0 && timeIndex < filteredMetrics.length) {
+      const timestamp = filteredMetrics[timeIndex].timestamp;
+      
+      // Find closest metric value
+      const datasets = chart.data.datasets;
+      let closestDistance = Infinity;
+      let closestMetric = '';
+      let closestValue = 0;
+
+      datasets.forEach((dataset: any) => {
+        const value = dataset.data[timeIndex];
+        const yPos = chart.scales.y.getPixelForValue(value);
+        const distance = Math.abs(y - yPos);
+        
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestMetric = dataset.label;
+          closestValue = value;
+        }
+      });
+
+      if (closestMetric) {
+        onAddAnnotation({
+          id: `annotation-${Date.now()}`,
+          timestamp,
+          modelId: metrics[0]?.modelId || '',
+          message: `${closestMetric}: ${closestValue.toFixed(3)}`,
+          metric: closestMetric.toLowerCase() as keyof Metrics,
+          value: closestValue
+        });
+      }
+    }
+  };
+
   return (
-    <Box component={Paper} sx={{ p: 2, height: '400px', position: 'relative' }} ref={containerRef}>
+    <Box 
+      component={Paper} 
+      sx={{ p: 2, height: '400px', position: 'relative' }} 
+      ref={containerRef}
+      onClick={handleChartClick}
+    >
       <ChartComponent
         ref={chartRef}
         data={chartData}

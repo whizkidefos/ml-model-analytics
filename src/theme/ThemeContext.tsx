@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo } from 'react';
-import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material';
+import { ThemeProvider as MuiThemeProvider, createTheme, CssBaseline } from '@mui/material';
 
 type ThemeContextType = {
   toggleTheme: () => void;
@@ -26,43 +26,37 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         palette: {
           mode,
           primary: {
-            main: '#1976d2',
+            main: mode === 'light' ? '#1976d2' : '#90caf9',
+          },
+          secondary: {
+            main: mode === 'light' ? '#dc004e' : '#f48fb1',
           },
           background: {
             default: mode === 'light' ? '#f5f5f5' : '#121212',
             paper: mode === 'light' ? '#ffffff' : '#1e1e1e',
           },
-        },
-        typography: {
-          fontFamily: 'Inter, system-ui, sans-serif',
-          h1: {
-            fontSize: '2.5rem',
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-          },
-          h2: {
-            fontSize: '2rem',
-            fontWeight: 600,
-            letterSpacing: '-0.01em',
-          },
-          h3: {
-            fontSize: '1.5rem',
-            fontWeight: 600,
-          },
-          body1: {
-            fontSize: '1rem',
-            lineHeight: 1.5,
-          },
-          button: {
-            textTransform: 'none',
-            fontWeight: 500,
+          text: {
+            primary: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
+            secondary: mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.6)',
           },
         },
         components: {
-          MuiPaper: {
+          MuiCssBaseline: {
             styleOverrides: {
-              root: {
-                backgroundImage: 'none',
+              body: {
+                backgroundColor: mode === 'light' ? '#f5f5f5' : '#121212',
+                color: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
+                transition: 'background-color 0.3s, color 0.3s',
+              },
+              '.metric-card': {
+                backgroundColor: mode === 'light' ? '#ffffff' : '#1e1e1e',
+                color: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
+                transition: 'background-color 0.3s, color 0.3s, box-shadow 0.3s',
+              },
+              '.chart-container': {
+                backgroundColor: mode === 'light' ? '#ffffff' : '#1e1e1e',
+                color: mode === 'light' ? 'rgba(0, 0, 0, 0.87)' : 'rgba(255, 255, 255, 0.87)',
+                transition: 'background-color 0.3s, color 0.3s, box-shadow 0.3s',
               },
             },
           },
@@ -71,11 +65,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     [mode]
   );
 
-  const value = { toggleTheme, mode };
-
   return (
-    <ThemeContext.Provider value={value}>
+    <ThemeContext.Provider value={{ toggleTheme, mode }}>
       <MuiThemeProvider theme={theme}>
+        <CssBaseline />
         {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>
